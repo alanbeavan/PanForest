@@ -95,28 +95,12 @@ def fit_classifiers(df, imp, performance, ns, ng, ntrees, depth):
     """    
     df = df.transpose() #I think this is easier transposed
     for i in range(ng):
-    #for row in df.iterrows():
-        #p = df[df[df.columns[i]] == 1] #genomes with gene presnet
-        #a = df[df[df.columns[i]] == 0] #genomes with gene absent
-        #npres = p.shape[0] #number of genomes with gene present
-        #na = ns - np #number of genomes with gene absent
         print("gene number\t" + str(i+1) + "\tout of\t" + str(ng))
         y = df[[df.columns[i]]]
         x = df.drop([df.columns[i]], axis = 1)
         
         #now split the dataset into test and train - train with 75% in each
         #class
-        #test = pd.concat([a.iloc[0:int(na / 4) + (na % 4 > 0)],
-        #                 p.iloc[0:int(np / 4) + (np % 4 > 0)]])
-
-        #train = pd.concat([a.iloc[int(na / 4) + (na % 4 > 0):na + 1],
-        #                  p.iloc[int(np / 4) + (np % 4 > 0):np + 1]])
-
-        #separate the true data (y) for both tests
-        #Ytrain = train[df.columns[i]]
-        #Xtrain = train.drop([df.columns[i]], axis = 1)
-        #Ytest = test[df.columns[i]]
-        #Xtest = test.drop([df.columns[i]], axis = 1)
         X_train, X_test, y_train, y_test = train_test_split(x, y,
                                                             test_size=0.25,
                                                             stratify=y,
@@ -165,12 +149,8 @@ def main():
         Fit Classifier using clever other people's code.
         Update performance and importance matrices.                             
     Add the diagonal to the importance matrices and write to file.
-    Update the performance table with various measures.                         X
+    Update the performance table with various measures.                         
     Maybe plot and save some histograms and/or boxplots.                        X
-    
-    Randomise the values in the table with the same frequecies as the original. X
-    Basically do the same thing again but with the random dataset.              X
-    Compare the statistics somehow lol.                                         X
     """
 
     ntrees, depth, filename, null = settings()
