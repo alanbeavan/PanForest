@@ -1,26 +1,55 @@
 #!/usr/bin/env python3.6
 """Train a random forest to identify correlations between genes etc."""
 
-from rf_module import *
-import pandas as pd
-import numpy as np
-import sklearn
+import sys
+import os
+import math
 import random
-from sklearn.model_selection import train_test_split
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import confusion_matrix
-from sklearn.metrics import classification_report
-import my_module as mod
+import argparse
+import pandas as pd
+import rf_module as rf
 
-def settings():
-    """Define the settings. Modify as you want."""
-    ntrees = 100
-    depth = 3
-    filename = "gene_presence_absence.csv"
-    null_h = False
-    min_missing = 10
-    min_present = 10
-    return ntrees, depth, filename, null_h, min_missing, min_present
+
+def get_args():
+    """Get settings from user arguments."""
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-n", "--n-trees", type = int,
+                        help = "number of trees in the forest",
+                        default = 100, dest = "ntrees")
+    parser.add_argument("-d", "--depth", type = int,
+                        help = "max depth of trees in the forest",
+                        default = 2, dest = "depth")
+    parser.add_argument("-m", "--matrix",
+                        help = "matrix file", dest = "filename")
+    parser.add_argument("-pres", "--min-present", type = float,
+                        help = "minimum percentage of genomes featuring a \
+                                gene for it to be analysed (5 = 5 percent, \
+                                not 0.05)",
+                        default = 1.0, dest = "min_present")
+    parser.add_argument("-abs", "--min-absent", type = float,
+                        help = "minimum percentage of genomes missing a \
+                                gene for it to be analysed (5 = 5 percent, \
+                                not 0.05)",
+                        default = 1.0, dest = "min_absent")
+    parser.add_argument("-o", "--output-directory", dest = "output",
+                        help = "destiny directory for results")
+    parser.add_argument("-r", "--randomise",
+                        help = "randomise the gene presence and absence (null\
+                                 hypothesis)",
+                        action = "store_true")
+    parser.add_argument("-t", "--n-threads", dest = "nthreads", default = 1,
+                        type = int, help = "number of threads (default - 1)")
+    parser.add_argument("-c", "--checkpoint", dest = "checkpoint",
+                        default = 0, type = int,
+                        help = "continue from checkpoint? provide the number\
+                                of genes that have been completed")
+    args = parser.parse_args()
+    if None in [args.filename, args.output]:
+        parser.print_help(sys.stderr)
+        sys.exit(0)
+    return [args.ntrees, args.depth, args.filename, args.min_present,
+            args.min_absent, args.output, args.randomise, args.nthreads,
+            args.checkpoint]
 
 def main():
     """
@@ -39,32 +68,34 @@ def main():
         note. I could randomise the genes too to make parallelisation easier
         in future.
     For each gene, perform random forest.
-        Split the data into genomes where the gene is present and absent.       
-        Split each into 75% training and 25% test.                              
+    Split the data into genomes where the gene is present and absent.
+        Split each into 75% training and 25% test.
         Separate the y variable (gene presence or absence) for each.
         Fit Classifier using clever other people's code.
-        Update performance and importance matrices.                             
+        Update performance and importance matrices.
     Add the diagonal to the importance matrices and write to file.
-    Update the performance table with various measures.                         
-    Maybe plot and save some histograms and/or boxplots.                        X
+    Update the performance table with various measures.
     """
-    ntrees, depth, filename, null_h, min_missing, min_present = settings()
-    df = pd.read_csv(filename, header = 0, index_col = [0,1,2], dtype = str)
-    df = preprocessDf(df, null_h, min_missing, min_present)
-    ns = df.shape[1] #number of strains
-    ng = df.shape[0] #number of genes (gene families)
-    imp = pd.DataFrame(0.0, index = np.arange(ng), columns = df.index.values)
-    imp.index = df.index.values
-    metrics = ['count', 'TPte', 'FPte', 'FNte', 'TNte', 'Ete', 'Ate', 'P1te',
-               'P0te', 'Pte', 'R1te', 'R0te', 'Rte', 'F1te', 'F0te', 'Fte',
-               'TPtr','FPtr', 'FNtr', 'TNtr', 'Etr', 'Atr', 'P1tr', 'P0tr',
-               'Ptr', 'R1tr', 'R0tr', 'Rtr', 'F1tr', 'F0tr', 'Ftr']
-    performance = pd.DataFrame(0.0, index = np.arange(ng), columns = metrics)
-    performance.index = df.index.values
-    df = df[random.sample(list(df.columns), ns)] #randomise genome order
-    fit_classifiers(df, imp, performance, ns, ng, ntrees, depth)
-    imp.to_csv("imp.csv")
-    performance.to_csv("performance.csv")
+    ntrees, depth, filename, min_present, min_missing, output,\
+            null_h, nthreads, checkpoint = get_args()
+    if not os.path.exists(output):
+        os.mkdir(output)
+    table = pd.read_csv(filename, header = 0, index_col = [0,1,2],
+                        dtype = str)
+    total_genomes = table.shape[1]
+    min_missing = math.ceil(min_missing * total_genomes/100)
+    min_present = math.ceil(min_present * total_genomes/100)
+
+    table = rf.preprocess_df(table, null_h, min_missing, min_present)
+    imp, performance = rf.init_tables(table)
+
+    #randomise genome order
+    n_s = table.shape[1] #number of strains
+    table = table[random.sample(list(table.columns), n_s)]
+    rf.fit_classifiers(table, [imp, performance], [ntrees, depth, nthreads],
+                       output, checkpoint)
+    imp.to_csv(output + "/imp.csv")
+    performance.to_csv(output + "/performance.csv")
 
 if __name__ == "__main__":
     main()
