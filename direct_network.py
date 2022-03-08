@@ -21,7 +21,6 @@ def calculate_proportions(matrix):
     counts = matrix.sum(axis = 1)
     for index in counts.index:
         props[index] = counts.loc[index]/n_strain
-    print(props)
     return props
 
 def main():
