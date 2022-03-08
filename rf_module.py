@@ -142,3 +142,4 @@ def fit_classifiers(table, results, params, output, checkpoint):
             print("\nWriting importance and performance martices...\n")
             results[0].to_csv(output + "/imp.csv")
             results[1].to_csv(output + "/performance.csv")
+    return results

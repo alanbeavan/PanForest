@@ -92,10 +92,11 @@ def main():
     #randomise genome order
     n_s = table.shape[1] #number of strains
     table = table[random.sample(list(table.columns), n_s)]
-    rf.fit_classifiers(table, [imp, performance], [ntrees, depth, nthreads],
-                       output, checkpoint)
-    imp.to_csv(output + "/imp.csv")
-    performance.to_csv(output + "/performance.csv")
+    results = rf.fit_classifiers(table, [imp, performance],
+                                 [ntrees, depth, nthreads],
+                                 output, checkpoint)
+    results[0].to_csv(output + "/imp.csv")
+    results[1].to_csv(output + "/performance.csv")
 
 if __name__ == "__main__":
     main()
