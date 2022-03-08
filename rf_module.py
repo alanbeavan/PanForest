@@ -11,6 +11,14 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import classification_report
 
+def get_file_data(filename):
+    """Stores the lines of the program with name filename as a list."""
+    with open(filename, encoding = "utf8") as in_file:
+        lines = []
+        for line in in_file:
+            lines.append(line.rstrip("\n"))
+    return lines
+
 def init_tables(table):
     """Initialise the performance and importance tables."""
     n_g = table.shape[0] #number of genes (gene families)

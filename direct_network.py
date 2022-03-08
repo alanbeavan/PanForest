@@ -13,13 +13,6 @@ def get_args():
         sys.exit()
     return sys.argv[1:]
 
-def get_file_data(filename):
-    """Stores the lines of the program with name filename as a list."""
-    with open(filename, encoding = "utf8") as in_file:
-        lines = []
-        for line in in_file:
-            lines.append(line.rstrip("\n"))
-    return lines
 
 def calculate_proportions(matrix):
     """Calculate the background abundance of all genes."""
@@ -59,7 +52,7 @@ def main():
     props = calculate_proportions(matrix)
     matrix = matrix.transpose()
 
-    network = get_file_data(infile)
+    network = rf.get_file_data(infile)
     newlines = []
     for line in network[1:]:
         target, source = line.split(",")[0:2]

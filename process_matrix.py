@@ -115,6 +115,10 @@ def main():
     #now write matrix to a file
     print("Writing collapsed matrix")
     matrix.to_csv(outfile, sep = ",", doublequote=False)
+    lines = rf.get_file_data(outfile)
+    with open(outfile, "w", encoding = "utf8") as out:
+        out.write(",," + lines[0] + "\n")
+        out.write("\n".join([line.strip('"') for line in lines[1:]]))
 
 if __name__ == "__main__":
     main()
