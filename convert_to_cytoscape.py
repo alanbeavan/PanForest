@@ -23,7 +23,7 @@ def main():
         if count % 100 == 0:
             print(count)
         for col in imp[index].index:
-            if imp[index][col] > 0.01:
+            if imp[index][col] > 0:
                 line = index.split(",")[0] + "," + col.split(",")[0] + ",pp," + str(imp[index][col])
                 lines.append(line)
     with open(outfile, "w", encoding = "utf8") as out:
