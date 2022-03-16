@@ -6,12 +6,9 @@ import argparse
 import os
 import pandas as pd
 import networkx as nx
-import matplotlib.pyplot as plt
 from networkx.algorithms.community import louvain_communities
 from networkx.algorithms.community import greedy_modularity_communities
-
-def get_args():
-    """Get user arguments."""
+from networkx.algorithms.community import asyn_lpa_communities
 
 def get_args():
     """Get settings from user arguments."""
@@ -24,7 +21,7 @@ def get_args():
                         default = False, dest = "edge_type")
     parser.add_argument("-m", "--method", type = str, dest = "method",
                         help = "Method to cluster graph (modularity (greedy),\
-                                 louvain (iterative)), default = modularity",
+                                 louvain (iterative), default = modularity",
                         default = "modularity")
     parser.add_argument("-o", "--output", type = str, default = "clusters",
                         help = "Output directory, default = clusters/",
@@ -52,12 +49,17 @@ def main():
                                       edge_attr = ["InteractionType", "Weight"],
                                       create_using=nx.DiGraph())
     if method == "louvain":
-        clusters = louvain_communities(network, weight = "Weight")
-    else:
+        clusters = louvain_communities(network, weight = "Weight",
+                                       threshold = 0.0001)
+    elif method == "modularity":
         clusters = greedy_modularity_communities(network, weight = "Weight")
+    else:
+        print("method must be louvain or modularity. Try again")
+        sys.exit()
 
-    os.mkdir(outdir)
-    for i in range(len(clusters)):
+    if not os.path.exists(outdir):
+        os.mkdir(outdir)
+    for i in range(len(clusters)): # pylint: disable=consider-using-enumerate
         if not os.path.exists(outdir + "/cluster_" + str(i)):
             os.mkdir(outdir + "/cluster_" + str(i))
         genes = list(clusters[i])

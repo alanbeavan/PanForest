@@ -12,9 +12,9 @@ def get_args():
     return sys.argv[1:]
 
 def main():
-    """Columns: Target,Source,Interactiontype,Weight."""
+    """Columns: Source,Target,Interactiontype,Weight."""
     infile, outfile = get_args() # pylint: disable=unbalanced-tuple-unpacking
-    lines = ["Target,Source,Interactiontype,Weight"]
+    lines = ["Source,Target,Interactiontype,Weight"]
     imp = pd.read_csv(infile, index_col = 0, header = 0)
     imp = imp.apply(pd.to_numeric)
     count = 0

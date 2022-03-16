@@ -23,6 +23,23 @@ def calculate_proportions(matrix):
         props[index] = counts.loc[index]/n_strain
     return props
 
+def direct_network(network, matrix, props):
+    """Calculate the direction of the network."""
+    newlines = []
+    count = 0
+    for line in network[1:]:
+        count += 1
+        if count % 1000 == 0:
+            print(str(count) + "\tdone")
+        source, target = line.split(",")[0:2]
+        weight = line.split(",")[3]
+        test = matrix.loc[matrix[source] == 1]
+        if sum(test[target])/test.shape[0] < props[target]:
+            newlines.append(",".join([target,source,"nn",weight]))
+        else:
+            newlines.append(line)
+    return newlines
+
 def main():
     """
     Write a new network file with pp for +ve intecations and nn for -ve.
@@ -52,15 +69,7 @@ def main():
     matrix = matrix.transpose()
 
     network = rf.get_file_data(infile)
-    newlines = []
-    for line in network[1:]:
-        target, source = line.split(",")[0:2]
-        weight = line.split(",")[3]
-        test = matrix.loc[matrix[source] == 1]
-        if sum(test[target])/test.shape[0] < props[target]:
-            newlines.append(",".join([target,source,"nn",weight]))
-        else:
-            newlines.append(line)
+    newlines = direct_network(network, matrix, props)
     with open(outfile, "w", encoding = "utf8") as out:
         out.write("Target,Source,InteractionType,Weight\n")
         out.write("\n".join(newlines))
