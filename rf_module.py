@@ -11,6 +11,29 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import classification_report
 
+def read_fasta(filename):
+    """Reads a fasta file returning the seqs as a dictionary."""
+    import re
+    import collections
+    lines = get_file_data(filename)
+    seqs = collections.OrderedDict()
+    key = ""
+    value = ""
+    for line in lines:
+        line = line.rstrip("\n")
+        if re.search(">", line):
+            if key:
+                seqs[key] = value
+                key = line[1:]
+            else:
+                key = line[1:]
+            value = ""
+        else:
+            value = value + line
+    seqs[key] = value
+    return(seqs)
+
+
 def get_file_data(filename):
     """Stores the lines of the program with name filename as a list."""
     with open(filename, encoding = "utf8") as in_file:
