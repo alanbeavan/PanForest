@@ -1,6 +1,7 @@
 #!/usr/bin/env python3.6
 """Process the matrix so that it's ready for analysis."""
 
+import re
 import sys
 import math
 import pandas as pd
@@ -118,7 +119,9 @@ def main():
     lines = rf.get_file_data(outfile)
     with open(outfile, "w", encoding = "utf8") as out:
         out.write(",," + lines[0] + "\n")
-        out.write("\n".join([line.strip('"') for line in lines[1:]]))
+        for line in lines[1:]:
+            out.write(re.sub("\"", "", line) + "\n")
+#        out.write("\n".join([line.strip('"') for line.maketrans("\"", "") in lines[1:]]))
 
 if __name__ == "__main__":
     main()
