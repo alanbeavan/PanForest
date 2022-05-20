@@ -171,6 +171,6 @@ def fit_classifiers(table, results, params, output, checkpoint):
 
         if i % 1000 == 0 and i != 0:
             print("\nWriting importance and performance martices...\n")
-            results[0].to_csv(output + "/imp.csv")
-            results[1].to_csv(output + "/performance.csv")
+            results[0].round(5).to_csv(output + "/imp.csv")
+            results[1].round(5).to_csv(output + "/performance.csv")
     return results
