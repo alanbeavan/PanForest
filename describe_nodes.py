@@ -25,10 +25,9 @@ def get_args():
 
 def main():
     """
-    Write the interactions present in all clusters with extra information.
-    each gene in the presence/asbsence of the other.
+    Write the nodes present in the graph with extra information.
     end result might be a table w/
-    source,target,interaction_type,strength,P(B),P(B|A)P(B|!A),P(A),P(A|B),P(A|!B)P(A+B).
+    NodeID,Annotation,Wordy Annotation,[list of performance metrics].
     """
     #for now just do one cluster
     performance, d_table, output_file = get_args()

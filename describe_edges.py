@@ -46,19 +46,21 @@ def main():
     matrix = matrix.transpose()
     n_genome = matrix.shape[0]
     for interaction in interactions:
-        print(interaction)
         target, source, interaction_type, weight = interaction.split(",")
-        b_freq = "%.2f"%(len(matrix.loc[matrix[source] == 1])/n_genome)
-        a_freq = "%.2f"%(len(matrix.loc[matrix[target] == 1])/n_genome)
-        test_b1 = matrix.loc[matrix[source] == 1]
-        test_b0 = matrix.loc[matrix[source] == 0]
-        conditional_b_freq = str('%2f'%(sum(test_b1[target])/test_b1.shape[0]))
-        neg_b_freq = str('%2f'%(sum(test_b0[target])/test_b0.shape[0]))
-        test_a1 = matrix.loc[matrix[target] == 1]
-        test_a0 = matrix.loc[matrix[target] == 0]
-        conditional_a_freq = str('%2f'%(sum(test_a1[source])/test_a1.shape[0]))
-        neg_a_freq = str('%2f'%(sum(test_a0[source])/test_a0.shape[0]))
-        p_both = str('%2f'%(sum(test_a1[source])/matrix.shape[0]))
+        a_freq = "%.2f"%(len(matrix.loc[matrix[source] == 1])/n_genome)
+        b_freq = "%.2f"%(len(matrix.loc[matrix[target] == 1])/n_genome)        
+        test_a1 = matrix.loc[matrix[source] == 1]
+        test_a0 = matrix.loc[matrix[source] == 0]
+        conditional_b_freq = str('%2f'%(sum(test_a1[target])/test_a1.shape[0]))
+        neg_b_freq = str('%2f'%(sum(test_a0[target])/test_a0.shape[0]))
+        test_b1 = matrix.loc[matrix[target] == 1]
+        test_b0 = matrix.loc[matrix[target] == 0]
+        conditional_a_freq = str('%2f'%(sum(test_b1[source])/test_b1.shape[0]))
+        neg_a_freq = str('%2f'%(sum(test_b0[source])/test_b0.shape[0]))
+        p_both = str('%2f'%(sum(test_b1[source])/matrix.shape[0]))
+        print(",".join([source,target,interaction_type,weight,
+            b_freq,conditional_b_freq,neg_b_freq,
+            a_freq,conditional_a_freq,neg_a_freq,p_both]))
         table_lines.append(",".join([source,target,interaction_type,weight,
                                      b_freq,conditional_b_freq,neg_b_freq,
                                      a_freq,conditional_a_freq,neg_a_freq,p_both]))
