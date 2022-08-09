@@ -3,6 +3,7 @@
 
 import argparse
 import glob
+import re
 import sys
 import pandas as pd
 import rf_module as rf
@@ -42,8 +43,10 @@ def main():
         node_id = line.split(",")[0]
         try:
             table_lines.append(line + "," + d_stats[node_id])
-            print(line + "," + d_stats[node_id])
+            #print(line + "," + d_stats[node_id])
         except:
+            #nodes not in any edges
+            #print(node_id)
             continue
 
     with open(output_file, "w", encoding = "utf8") as out:
