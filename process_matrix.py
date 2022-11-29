@@ -1,18 +1,29 @@
 #!/usr/bin/env python3.6
 """Process the matrix so that it's ready for analysis."""
 
+import argparse
 import re
 import sys
 import math
 import pandas as pd
 import rf_module as rf
 
+
 def get_args():
     """Get user arguments."""
-    if len(sys.argv) != 3:
-        print("USAGE: python3 process_matrix.py infile outfile\n\n")
-        sys.exit()
-    return sys.argv[1:]
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-i", "--infile", dest = "infile",
+                        type = str, help = "input file")
+    parser.add_argument("-r", "--roary", dest = "roary",
+                        help = "toggle for roary input",
+                        action = "store_true")
+    parser.add_argument("-o", "--output", dest = "outfile",
+                        type = str, help = "Output matrix file")
+    args = parser.parse_args()
+    if None in [args.infile, args.outfile]:
+        parser.print_help(sys.stderr)
+        sys.exit(0)
+    return [args.infile, args.outfile, args.roary]
 
 def write_gene_lists(matrix):
     """
@@ -90,6 +101,15 @@ def collapse_genomes(matrix):
     matrix = matrix.transpose()
     return matrix
 
+def convert_roary(roary_matrix):
+    """
+    Convert Roary matrix into panaroo by removing several columns.
+    There are 14 roary header cols and 3 panaroo
+    """
+    cols = range(11)
+    roary_matrix.drop(roary_matrix.columns[cols], axis=1, inplace=True)
+    return roary_matrix
+
 
 def main():
     """
@@ -102,8 +122,10 @@ def main():
     them to a file.
     Write the new matrix to a file.
     """
-    infile, outfile = get_args() # pylint: disable=unbalanced-tuple-unpacking
+    infile, outfile, roary = get_args() # pylint: disable=unbalanced-tuple-unpacking
     matrix = pd.read_csv(infile, header = 0, index_col = [0,1,2], dtype = str)
+    if roary:
+        matrix = convert_roary(matrix)
     #remove genes with < 2 present/absent
     matrix = rf.preprocess_df(matrix, 0, 0, 0)
     print("Writing singletons, core and constant genes")
