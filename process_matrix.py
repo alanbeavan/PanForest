@@ -105,7 +105,18 @@ def convert_roary(roary_matrix):
     """
     Convert Roary matrix into panaroo by removing several columns.
     There are 14 roary header cols and 3 panaroo
+    there are also commas in the values of the PA matrix of roary
     """
+    index = roary_matrix.index
+    names = index.names
+    new_index = []
+    for ind in index:
+        if "," in ind[2]:
+            new_index = new_index + [(ind[0], ind[1], ind[2].replace(",",";"))]
+        else:
+            new_index.append(ind)
+    roary_matrix.index = pd.MultiIndex.from_tuples(new_index, names = names)
+    roary_matrix = roary_matrix.replace(',',';', regex=True)
     cols = range(11)
     roary_matrix.drop(roary_matrix.columns[cols], axis=1, inplace=True)
     return roary_matrix
