@@ -10,6 +10,14 @@ Args:
     network:        The network to be expanded
     groups:         The set of non-unique gene PA patterns outputted by 
                     process_matrix
+
+    d_table:        The full D table outputted by calculate_d.R must be passed
+                    to this program so that family groups can be assessed for
+                    whether they pass the D score threshold. Only genes
+                    present in the d table will be added even with -i so make
+                    sure it has everything you need
+    D_cutoff:       The D score minimum for family groups to be pointed at in
+                    the output network. Default = 0
     include_new:    (optional) An indication that the new network should 
                     include family group expansions that do not currently
                     feature if the supplied network. i.e. if a family group
@@ -17,15 +25,6 @@ Args:
                     new connected component would appear in the output
                     network featuring these 2 genes as co-occuring but with
                     no other connections.
-    node_table:     (optional) If include_new = True, the full node table
-                    outputted by describe_nodes.py must be passed to this
-                    program so that family groups not currently in the network
-                    can be assessed for whether they pass the D score
-                    threshold. Only genes present in the node_table will be
-                    added even with -i so make sure it has everything you need
-    D_cutoff:       (optional) If include_new = True, the D score minimum for
-                    new family groups to be included in the output network.
-
 """
 
 import argparse
@@ -46,22 +45,21 @@ def get_args():
                         help = "include links between family groups not curren\
                                 tly in the network",
                         dest = "include", action = "store_true")
-    parser.add_argument("-t", "--node-table", type = str,
-                        help = "The full node table output by describe_nodes.p\
-                                y if -i",
-                        dest = "node_table")
+    parser.add_argument("-t", "--d-table", type = str,
+                        help = "The full D table output by calculate_d.R",
+                        dest = "d_table")
     parser.add_argument("-d", "--d-cutoff", type = float,
                         help = "minimum value of D for which a gene can be\
-                                 included in the new network if -i",
+                                 pointed at in the output",
                         default = 0.0, dest = "d_min")
     parser.add_argument("-o", "--out", type = str,
                         help = "output network file name",
                         default = "expanded_network.csv", dest = "outfile")
     args = parser.parse_args()
-    if None in [args.net_file, args.groups_file]:
+    if None in [args.net_file, args.groups_file, args.d_table, args.d_min]:
         parser.print_help(sys.stderr)
         sys.exit(0)
-    return [args.net_file, args.groups_file, args.include, args.node_table,
+    return [args.net_file, args.groups_file, args.include, args.d_table,
             args.d_min, args.outfile]
 
 def self_match(g_list):
@@ -73,9 +71,18 @@ def self_match(g_list):
                 matches.append(gene + "," + gene1 + ",pp")
     return matches
 
+def assign_d(d_table):
+    """Get the D for every gene in the table."""
+    d_dict = {}
+    for line in rf.get_file_data(d_table)[1:]:
+        fields = line.split()
+        d_dict[fields[0]] = float(fields[1])
+    return d_dict
+
 def main():
     """Expand family groups and write new output."""
-    network, groups, include, node_table, d_min, outfile = get_args()
+    network, groups, include, d_table, d_min, outfile = get_args()
+    d_dict = assign_d(d_table)
     new_net = []
     groups_dict = {}
     for line in rf.get_file_data(groups):
@@ -98,7 +105,8 @@ def main():
                     for sgene in groups_dict[fields[1]]:
                         new_net.append(tgene + "," + sgene + "," + int_type)
                 new_net.extend(self_match(groups_dict[fields[0]]))
-                new_net.extend(self_match(groups_dict[fields[1]]))
+                if d_dict[fields[1]] >= d_min:
+                    new_net.extend(self_match(groups_dict[fields[1]]))
                 if include:
                     if fields[0] not in done_fams:
                         done_fams.append(fields[0])
@@ -114,19 +122,21 @@ def main():
             elif "family" in fields[1]:
                 for sgene in groups_dict[fields[1]]:
                     new_net.append(fields[0] + "," + sgene + "," + int_type)
-                new_net.extend(self_match(groups_dict[fields[1]]))
+                if d_dict[fields[1]] >= d_min:
+                    new_net.extend(self_match(groups_dict[fields[1]]))
                 if include and fields[1] not in done_fams:
                     done_fams.append(fields[1])
         else:
             new_net.append(",".join(line.split(",")[:3]))
     
     if include:
-        for line in rf.get_file_data(node_table):
-            if "family" in line:
-                fields = line.split(",")
-                if "family" in fields[0]  and fields[0] not in done_fams:
-                    if float(fields[-1]) > d_min:
+        for key, value in d_dict.items():
+            if "family" in key:
+                if key not in done_fams:
+                    if value >= d_min:
                         new_net.extend(self_match(groups_dict[fields[0]]))
+    new_net = list(set(new_net))
+    
     with open(outfile, "w", encoding = "utf8") as out:
         out.write("Target,Source,InteractionType\n")
         out.write("\n".join(new_net) + "\n")
