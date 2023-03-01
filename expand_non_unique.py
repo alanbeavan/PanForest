@@ -128,13 +128,13 @@ def main():
                     done_fams.append(fields[1])
         else:
             new_net.append(",".join(line.split(",")[:3]))
-    
+
     if include:
         for key, value in d_dict.items():
             if "family" in key:
                 if key not in done_fams:
                     if value >= d_min:
-                        new_net.extend(self_match(key))
+                        new_net.extend(self_match(groups_dict[key]))
     new_net = list(set(new_net))
     
     with open(outfile, "w", encoding = "utf8") as out:
