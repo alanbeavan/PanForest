@@ -134,7 +134,7 @@ def main():
             if "family" in key:
                 if key not in done_fams:
                     if value >= d_min:
-                        new_net.extend(self_match(groups_dict[fields[0]]))
+                        new_net.extend(self_match(key))
     new_net = list(set(new_net))
     
     with open(outfile, "w", encoding = "utf8") as out:
