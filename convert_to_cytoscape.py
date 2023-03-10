@@ -1,4 +1,4 @@
-#!/usr/bin/env python3.6
+#!/usr/bin/env python3
 """Convert importance matrices to Cyctoscape's preferred format."""
 
 import sys

@@ -1,4 +1,4 @@
-#!/usr/bin/env python3.6
+#!/usr/bin/env python3
 """Process the matrix so that it's ready for analysis."""
 
 import argparse

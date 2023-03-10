@@ -1,4 +1,4 @@
-#!/usr/bin/env python3.6
+#!/usr/bin/env python3
 """
 Expand the non-unique gene presesence absence patterns so that each family
 group is replaced with the genes that belong to it. The resulting network

@@ -1,4 +1,4 @@
-#!/usr/bin/env python3.6
+#!/usr/bin/env python3
 """Cluster a network and write the clusters to a file."""
 
 import sys

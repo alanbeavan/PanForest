@@ -1,4 +1,4 @@
-#!/usr/bin/env python3.6
+#!/usr/bin/env python3
 """Calculate if a relationship is negative or positive for all edges."""
 
 import sys

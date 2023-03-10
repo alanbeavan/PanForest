@@ -1,4 +1,4 @@
-#!/usr/bin/env python3.6
+#!/usr/bin/env python3
 """Train a random forest to identify correlations between genes etc."""
 
 import sys

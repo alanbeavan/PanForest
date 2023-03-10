@@ -1,4 +1,4 @@
-#!/usr/bin/env python3.6
+#!/usr/bin/env python3
 """Make an edge table with some extra stats."""
 
 import argparse
