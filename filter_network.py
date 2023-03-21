@@ -2,6 +2,7 @@
 """Filter a network according to some user specified ."""
 
 import argparse
+import sys
 import rf_module as rf
 
 def get_args():
@@ -12,7 +13,7 @@ def get_args():
                         help = "Node table as output by direct_network.py")
     parser.add_argument("-e", "--edge-table", dest = "edge_table",
                         type = str,
-                        help = "Edge table as output by describe_edges.py")
+                        help = "Network as list of edges")
     parser.add_argument("-d", "--d-threshold", dest = "d_threshold",
                         type = float, default = 0.0,
                         help = "Minumum D value of target nodes to include \
