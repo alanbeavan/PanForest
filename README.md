@@ -19,7 +19,7 @@ Pangenome analysis using random forests
 ### a. Clone the GitHub Repository
 Clone the GitHub repository using the following command:
 
-git clone https://github.com/alanbeavan/pangenome_rf
+`git clone https://github.com/alanbeavan/pangenome_rf`
 
 
 
@@ -35,16 +35,16 @@ conda activate py10
 
 Then, install the required Python packages in your new Anaconda environment:
 
-conda install pandas
-conda install -c anaconda scikit-learn
+`conda install pandas`
+`conda install -c anaconda scikit-learn`
 
 If you installed a local version of Python, you can use `pip3` instead.
 
 ### d. Install Python Packages
 Make sure you have installed the following Python packages in your environment:
 
-- pandas
-- scikit-learn
+- `pandas`
+- `scikit-learn`
 
 If you encounter any missing modules when running the program, install them using Anaconda.
 
@@ -52,7 +52,7 @@ If you encounter any missing modules when running the program, install them usin
 ### a. Clean the Panaroo Presence-Absence Matrix
 The Panaroo presence-absence matrix needs cleaning. Run `process_matrix.py` to clean it up:
 
-python3 process_matrix.py <panaroo_presence_absence_matrix> <output_file>
+`python3 process_matrix.py <panaroo_presence_absence_matrix> <output_file>`
 
 
 My suggestion is to name the output file `collapsed_matrix.csv`. The program will generate six files as listed below:
@@ -68,29 +68,29 @@ My suggestion is to name the output file `collapsed_matrix.csv`. The program wil
 ### a. Familiarize with Options
 First, familiarize yourself with the program options by running:
 
-python3 pangenome_rf.py -h
+`python3 pangenome_rf.py -h`
 
 This will display the program's usage.
 
 ### b. Run a Test
 Run a short test to ensure everything is working:
 
-python3 pangenome_rf.py -n 1 -d 1 -m collapsed_matrix.csv -pres 1 -abs 1 -o test
+`python3 pangenome_rf.py -n 1 -d 1 -m collapsed_matrix.csv -pres 1 -abs 1 -o test`
 
 
 Check the output for progress information.
 
 ### c. Run the Random Forest Program
 Run the random forest program with your chosen parameters. You need to decide on these main parameters:
-- NTREES (number of trees in the forest)
-- DEPTH (max depth of trees in the forest)
-- MIN_PRESENT (minimum percentage of genomes featuring a gene)
-- MIN_ABSENT (minimum percentage of genomes missing a gene)
-- NTHREADS (number of parallel processes)
+- `NTREES` (number of trees in the forest)
+- `DEPTH` (max depth of trees in the forest)
+- `MIN_PRESENT` (minimum percentage of genomes featuring a gene)
+- `MIN_ABSENT` (minimum percentage of genomes missing a gene)
+- `NTHREADS` (number of parallel processes)
 
 Example command:
 
-python3 pangenome_rf.py -n <1000> -d <8> -m <collapsed_matrix.csv> -pres <1> -abs <1> -o <output>
+`python3 pangenome_rf.py -n <1000> -d <8> -m <collapsed_matrix.csv> -pres <1> -abs <1> -o <output>`
 
 
 Monitor the output directory for progress updates.
@@ -98,26 +98,26 @@ Monitor the output directory for progress updates.
 ## 4. Simplify the Importance Matrix (Optional)
 To simplify the importance matrix, set a threshold below which relationships should be ignored:
 
-python3 simplify_imp.py <threshold> <input_imp.csv> <output_file>
+`python3 simplify_imp.py <threshold> <input_imp.csv> <output_file>`
 
 The threshold should be chosen after reviewing the distribution of importances or network visualization.
 
 ## 5. Convert to a Cytoscape/Gephi Format (Optional)
 To convert the matrix for use with Cytoscape and Gephi, run:
 
-python3 convert_to_cytoscape.py <input imp.csv> <output_network.csv>
+`python3 convert_to_cytoscape.py <input imp.csv> <output_network.csv>`
 
 The output file will be a list of edges in the network.
 
 ## 6. Direct the Edges of the Network (Optional)
 To indicate if genes are promoters or inhibitors, use the `direct_network.py` program:
 
-python3 direct_network.py <input cytoscape csv> <collapsed_network.csv> <output>
+`python3 direct_network.py <input cytoscape csv> <collapsed_network.csv> <output>`
 
 ## 7. Calculate the D Statistic for All Genes
 To calculate the D statistic for genes, you'll need a rooted phylogeny and a list of genes. Run the following:
 
-Rscript calculate_d.R -a <path> -t <treefile> -g <presence_absence_matrix> -c <ncores> -o <prefix>
+`Rscript calculate_d.R -a <path> -t <treefile> -g <presence_absence_matrix> -c <ncores> -o <prefix>`
 
 The output is a file containing each gene and its D value.
 
@@ -126,16 +126,16 @@ To create an SQL database with statistics, follow these steps:
 
 - Describe your nodes with performance metrics and D values:
 
-python3 describe_nodes.py -p <PERFORMANCE> -d <D_TABLE> -o <OUTPUT_FILE>
+`python3 describe_nodes.py -p <PERFORMANCE> -d <D_TABLE> -o <OUTPUT_FILE>`
 
 - Describe your edges:
 
-python3 describe_edges.py -m <MATRIX_FILE> -n <NETWORK_FILE> -o <OUTPUT_FILE>
+`python3 describe_edges.py -m <MATRIX_FILE> -n <NETWORK_FILE> -o <OUTPUT_FILE>`
 
 - Create the SQL database:
 
-python3 make_sql_database.py -e <EDGES_FILE> -n <NODES_FILE> -o <OUTFILE>
+`python3 make_sql_database.py -e <EDGES_FILE> -n <NODES_FILE> -o <OUTFILE>`
 
 You now have an SQL database that you can query.
 
-These instructions should help you with the Pangenome_rf.py workflow. Customize the commands and options based on your specific needs.
+These instructions should help you with the `pangenome_rf.py` workflow. Customize the commands and options based on your specific needs.
