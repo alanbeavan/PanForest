@@ -14,22 +14,27 @@ def get_args():
     """Get settings from user arguments."""
     parser = argparse.ArgumentParser()
     parser.add_argument("-n", "--n-trees", type = int,
-                        help = "number of trees in the forest",
+                        help = "number of trees (default = 100)",
                         default = 100, dest = "ntrees")
     parser.add_argument("-d", "--depth", type = int,
                         help = "max depth of trees in the forest",
                         default = 2, dest = "depth")
+    parser.add_argument("-p", "--purity", type = float,
+                        help = "minimum reduction in purity at a decision. \
+                                If speciefied, must be lower than \
+                                min_present and min_absent",
+                        dest = "purity")
     parser.add_argument("-m", "--matrix",
                         help = "matrix file", dest = "filename")
     parser.add_argument("-pres", "--min-present", type = float,
                         help = "minimum percentage of genomes featuring a \
                                 gene for it to be analysed (5 = 5 percent, \
-                                not 0.05)",
+                                not 0.05. Default = 1)",
                         default = 1.0, dest = "min_present")
     parser.add_argument("-abs", "--min-absent", type = float,
                         help = "minimum percentage of genomes missing a \
                                 gene for it to be analysed (5 = 5 percent, \
-                                not 0.05)",
+                                not 0.05. Default = 1)",
                         default = 1.0, dest = "min_absent")
     parser.add_argument("-o", "--output-directory", dest = "output",
                         help = "destiny directory for results")
@@ -38,7 +43,7 @@ def get_args():
                                  hypothesis)",
                         action = "store_true")
     parser.add_argument("-t", "--n-threads", dest = "nthreads", default = 1,
-                        type = int, help = "number of threads (default - 1)")
+                        type = int, help = "number of threads (default = 1)")
     parser.add_argument("-c", "--checkpoint", dest = "checkpoint",
                         default = 0, type = int,
                         help = "continue from checkpoint? provide the number\
@@ -47,9 +52,9 @@ def get_args():
     if None in [args.filename, args.output]:
         parser.print_help(sys.stderr)
         sys.exit(0)
-    return [args.ntrees, args.depth, args.filename, args.min_present,
-            args.min_absent, args.output, args.randomise, args.nthreads,
-            args.checkpoint]
+    return [args.ntrees, args.depth, args.purity, args.filename,
+            args.min_present, args.min_absent, args.output, args.randomise,
+            args.nthreads, args.checkpoint]
 
 def main():
     """
@@ -76,7 +81,7 @@ def main():
     Add the diagonal to the importance matrices and write to file.
     Update the performance table with various measures.
     """
-    ntrees, depth, filename, min_present, min_missing, output,\
+    ntrees, depth, purity, filename, min_present, min_missing, output,\
             null_h, nthreads, checkpoint = get_args()
     if not os.path.exists(output):
         os.mkdir(output)
@@ -93,10 +98,10 @@ def main():
     n_s = table.shape[1] #number of strains
     table = table[random.sample(list(table.columns), n_s)]
     results = rf.fit_classifiers(table, [imp, performance],
-                                 [ntrees, depth, nthreads],
+                                 [ntrees, depth, purity, nthreads],
                                  output, checkpoint)
-    results[0].to_csv(output + "/imp.csv")
-    results[1].to_csv(output + "/performance.csv")
+    results[0].round(5).to_csv(output + "/imp.csv")
+    results[1].round(5).to_csv(output + "/performance.csv")
 
 if __name__ == "__main__":
     main()

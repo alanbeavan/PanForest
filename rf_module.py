@@ -133,7 +133,7 @@ def fit_classifiers(table, results, params, output, checkpoint):
     """
     Fit a random forest classifier for all genes.
     results = [imp, performance]
-    params = [ntrees, depth, nthreads]
+    params = [ntrees, depth, purity, nthreads]
     """
     n_g = table.shape[0]
     table = table.transpose() #I think this is easier transposed
@@ -153,11 +153,34 @@ def fit_classifiers(table, results, params, output, checkpoint):
         datasets = train_test_split(x_all, y_all,
                                     test_size=0.25, stratify=y_all)
         #random forest
-        model = RandomForestClassifier(n_estimators = params[0],
-                                       max_depth = params[1],
-                                       max_features='sqrt',
-                                       min_samples_split=2,
-                                       n_jobs=params[2])
+        if params[2]:
+            if params[1]:
+                model = RandomForestClassifier(n_estimators = params[0],
+                                               min_impurity_decrease =\
+                                                       params[2],
+                                               max_depth = params[1],
+                                               max_features='sqrt',
+                                               min_samples_split=2,
+                                               n_jobs=params[3])
+            else:
+                model = RandomForestClassifier(n_estimators = params[0],
+                                               min_impurity_decrease =\
+                                                       params[2],
+                                               max_features='sqrt',
+                                               min_samples_split=2,
+                                               n_jobs=params[3])
+ 
+        elif params[1]:
+            model = RandomForestClassifier(n_estimators = params[0],
+                                           max_depth = params[1],
+                                           max_features='sqrt',
+                                           min_samples_split=2,
+                                           n_jobs=params[3])
+
+            
+        else:
+            print("either depth or purity (or both) must be set")
+            sys.exit()
         model.fit(datasets[0], datasets[2])
         y_pred_train = model.predict(datasets[0])
         y_pred_test = model.predict(datasets[1])
