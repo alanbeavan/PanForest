@@ -20,7 +20,7 @@ def get_args():
                         help = "max depth of trees in the forest",
                         default = 2, dest = "depth")
     parser.add_argument("-p", "--purity", type = float,
-                        help = "minimum reduction in purity at a decision. \
+                        help = "minimum increase in purity at a decision. \
                                 If speciefied, must be lower than \
                                 min_present and min_absent",
                         dest = "purity")
