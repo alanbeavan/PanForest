@@ -1,4 +1,4 @@
-# pangenome_rf
+# PanForest
 Pangenome analysis using random forests
 
 **Author:** Alan Beavan
@@ -19,7 +19,7 @@ Pangenome analysis using random forests
 ### a. Clone the GitHub Repository
 Clone the GitHub repository using the following command:
 
-`git clone https://github.com/alanbeavan/pangenome_rf`
+`git clone https://github.com/alanbeavan/PanForest`
 
 
 
@@ -68,14 +68,14 @@ My suggestion is to name the output file `collapsed_matrix.csv`. The program wil
 ### a. Familiarize with Options
 First, familiarize yourself with the program options by running:
 
-`python3 pangenome_rf.py -h`
+`python3 PanForest.py -h`
 
 This will display the program's usage.
 
 ### b. Run a Test
 Run a short test to ensure everything is working:
 
-`python3 pangenome_rf.py -n 1 -d 1 -m collapsed_matrix.csv -pres 1 -abs 1 -o test`
+`python3 PanForest.py -n 1 -d 1 -m collapsed_matrix.csv -pres 1 -abs 1 -o test`
 
 
 Check the output for progress information.
@@ -90,7 +90,7 @@ Run the random forest program with your chosen parameters. You need to decide on
 
 Example command:
 
-`python3 pangenome_rf.py -n <1000> -d <8> -m <collapsed_matrix.csv> -pres <1> -abs <1> -o <output>`
+`python3 PanForest.py -n <1000> -d <8> -m <collapsed_matrix.csv> -pres <1> -abs <1> -o <output>`
 
 
 Monitor the output directory for progress updates.
@@ -138,4 +138,4 @@ To create an SQL database with statistics, follow these steps:
 
 You now have an SQL database that you can query.
 
-These instructions should help you with the `pangenome_rf.py` workflow. Customize the commands and options based on your specific needs.
+These instructions should help you with the `PanForest.py` workflow. Customize the commands and options based on your specific needs.
