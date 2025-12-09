@@ -1,5 +1,6 @@
 # PanForest
 Pangenome analysis using random forests
+https://doi.org/10.5281/zenodo.17865482
 
 **Author:** Alan Beavan
 
